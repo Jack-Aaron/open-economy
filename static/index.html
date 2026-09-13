@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OpenEconomy</title>
+  <link rel="stylesheet" href="/assets/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <div class="eyebrow">OPEN ECONOMIC GRAPH</div>
+      <h1>OpenEconomy</h1>
+      <p>Follow money through households, firms, government, finance, trade, and political organizations.</p>
+    </div>
+    <div class="prototype-badge">Prototype</div>
+  </header>
+
+  <main class="layout">
+    <section class="workspace">
+      <div class="toolbar">
+        <div class="toolbar-group">
+          <span class="toolbar-label">Layers</span>
+          <button class="filter active" data-layer="all">All</button>
+          <button class="filter" data-layer="real">Real</button>
+          <button class="filter" data-layer="income">Income</button>
+          <button class="filter" data-layer="financial">Financial</button>
+          <button class="filter" data-layer="fiscal">Fiscal</button>
+          <button class="filter" data-layer="political">Political</button>
+        </div>
+        <div class="toolbar-group compact">
+          <span class="legend-dot reported"></span><span>reported</span>
+          <span class="legend-dot inferred"></span><span>inferred</span>
+          <span class="legend-dot residual"></span><span>residual</span>
+          <span class="legend-dot illustrative"></span><span>illustrative</span>
+        </div>
+      </div>
+
+      <div class="notice" id="notice"></div>
+      <div class="graph-wrap">
+        <svg id="graph" viewBox="0 0 1100 700" role="img" aria-label="Interactive economic flow graph">
+          <defs>
+            <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+              <path d="M0,0 L0,6 L9,3 z" />
+            </marker>
+          </defs>
+          <g id="edges"></g>
+          <g id="nodes"></g>
+        </svg>
+      </div>
+    </section>
+
+    <aside class="inspector" id="inspector">
+      <div class="inspector-empty">
+        <span class="kicker">Inspect the circulation</span>
+        <h2>Select a node</h2>
+        <p>Click any sector or institution to see what flows in, what flows out, its children, and the public sources intended to support those relationships.</p>
+      </div>
+    </aside>
+  </main>
+
+  <footer>
+    <span>OpenEconomy</span>
+    <span>Accounting first. Provenance always.</span>
+  </footer>
+  <script src="/assets/app.js"></script>
+</body>
+</html>
