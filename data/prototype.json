@@ -1,0 +1,45 @@
+{
+  "metadata": {
+    "title": "OpenEconomy prototype",
+    "period": "illustrative annualized flows",
+    "currency": "USD",
+    "warning": "Prototype values are illustrative unless explicitly replaced by reported public-source facts. Do not use them as official statistics."
+  },
+  "sources": [
+    {"id":"bea","name":"National Economic Accounts and Input-Output Accounts","publisher":"U.S. Bureau of Economic Analysis","url":"https://www.bea.gov/","note":"Intended source for production, income, consumption, compensation, trade, and industry flows."},
+    {"id":"fed-z1","name":"Financial Accounts of the United States (Z.1)","publisher":"Federal Reserve Board","url":"https://www.federalreserve.gov/releases/z1/","note":"Intended source for financial stocks and inter-sector financial flows."},
+    {"id":"sec","name":"EDGAR / Company Facts","publisher":"U.S. Securities and Exchange Commission","url":"https://www.sec.gov/edgar/sec-api-documentation","note":"Intended source for named public-company financial statement facts."},
+    {"id":"census-bls","name":"Business and labor statistics","publisher":"U.S. Census Bureau and Bureau of Labor Statistics","url":"https://www.census.gov/","note":"Intended source for payroll, employment, establishments, and labor-market detail."},
+    {"id":"fec","name":"Federal campaign finance data","publisher":"Federal Election Commission","url":"https://www.fec.gov/data/","note":"Intended source for federal contributions, committee receipts, disbursements, and independent expenditures."}
+  ],
+  "entities": [
+    {"id":"households","name":"Households","kind":"sector","sector":"households","description":"People and household units receiving income, consuming, saving, paying taxes, and making political contributions.","tags":["macro"]},
+    {"id":"firms","name":"Firms","kind":"sector","sector":"business","description":"Nonfinancial businesses producing goods and services and paying workers and suppliers.","tags":["macro"]},
+    {"id":"government","name":"Government","kind":"sector","sector":"government","description":"Federal, state, and local governments collecting taxes and purchasing goods and services or paying transfers.","tags":["macro"]},
+    {"id":"banks","name":"Banks & Credit","kind":"sector","sector":"finance","description":"Deposit-taking and credit-creating financial institutions.","tags":["macro"]},
+    {"id":"retirement","name":"Retirement Funds","kind":"sector","sector":"finance","description":"Retirement accounts and pension vehicles receiving contributions and owning financial assets.","tags":["macro"]},
+    {"id":"rest-world","name":"Rest of World","kind":"sector","sector":"external","description":"Foreign households, firms, governments, and financial institutions trading with the U.S.","tags":["macro"]},
+    {"id":"political-orgs","name":"PACs & Super PACs","kind":"sector","sector":"political","description":"Political committees receiving contributions and making campaign-related expenditures.","tags":["political"]},
+    {"id":"media-vendors","name":"Media & Campaign Vendors","kind":"industry","sector":"business","description":"Media outlets, ad platforms, consultants, printers, and other vendors paid by campaigns and committees.","parent_id":"firms","tags":["political","business"]},
+    {"id":"public-companies","name":"Public Companies","kind":"industry-group","sector":"business","description":"Publicly traded firms that can be progressively resolved using SEC filings.","parent_id":"firms","tags":["drilldown"]},
+    {"id":"unresolved-firms","name":"Other / Unresolved Firms","kind":"residual","sector":"business","description":"Explicit residual for business activity not yet resolved to more detailed counterparties.","parent_id":"firms","tags":["residual"]}
+  ],
+  "flows": [
+    {"id":"payroll","source":"firms","target":"households","type":"labor_compensation","layer":"income","amount":8200,"status":"illustrative","source_ids":["bea","census-bls"],"confidence":0.3,"note":"Demonstrates gross labor compensation as the bridge from firms to household income."},
+    {"id":"consumption","source":"households","target":"firms","type":"personal_consumption","layer":"real","amount":12800,"status":"illustrative","source_ids":["bea"],"confidence":0.3,"note":"Household purchases of goods and services from businesses."},
+    {"id":"household-taxes","source":"households","target":"government","type":"personal_taxes","layer":"fiscal","amount":3100,"status":"illustrative","source_ids":["bea"],"confidence":0.3,"note":"Income and other household taxes."},
+    {"id":"business-taxes","source":"firms","target":"government","type":"business_taxes","layer":"fiscal","amount":950,"status":"illustrative","source_ids":["bea"],"confidence":0.3,"note":"Corporate income and production-related tax flows."},
+    {"id":"transfers","source":"government","target":"households","type":"transfers","layer":"fiscal","amount":2800,"status":"illustrative","source_ids":["bea"],"confidence":0.3,"note":"Government social benefits and other transfers."},
+    {"id":"gov-purchases","source":"government","target":"firms","type":"government_purchases","layer":"real","amount":4200,"status":"illustrative","source_ids":["bea"],"confidence":0.3,"note":"Government purchases from the productive economy."},
+    {"id":"deposits","source":"households","target":"banks","type":"deposits_and_saving","layer":"financial","amount":1200,"status":"illustrative","source_ids":["fed-z1"],"confidence":0.25,"note":"Net household allocation toward bank deposits and related saving instruments."},
+    {"id":"credit","source":"banks","target":"households","type":"consumer_and_mortgage_credit","layer":"financial","amount":900,"status":"illustrative","source_ids":["fed-z1"],"confidence":0.25,"note":"New or net credit supplied to households."},
+    {"id":"business-credit","source":"banks","target":"firms","type":"business_credit","layer":"financial","amount":1100,"status":"illustrative","source_ids":["fed-z1"],"confidence":0.25,"note":"Bank credit and related financing supplied to firms."},
+    {"id":"retirement-contrib","source":"households","target":"retirement","type":"retirement_contributions","layer":"financial","amount":780,"status":"illustrative","source_ids":["fed-z1","census-bls"],"confidence":0.25,"note":"Employee and household retirement saving."},
+    {"id":"equity-capital","source":"retirement","target":"firms","type":"equity_and_bond_financing","layer":"financial","amount":620,"status":"illustrative","source_ids":["fed-z1"],"confidence":0.2,"note":"Illustrates retirement-sector ownership and financing of firms."},
+    {"id":"imports","source":"firms","target":"rest-world","type":"imports_payment","layer":"real","amount":3600,"status":"illustrative","source_ids":["bea"],"confidence":0.3,"note":"Domestic payments corresponding to imported goods and services."},
+    {"id":"exports","source":"rest-world","target":"firms","type":"exports_payment","layer":"real","amount":3000,"status":"illustrative","source_ids":["bea"],"confidence":0.3,"note":"Foreign payments for U.S. exports."},
+    {"id":"campaign-giving","source":"households","target":"political-orgs","type":"campaign_contribution","layer":"political","amount":8.5,"status":"illustrative","source_ids":["fec"],"confidence":0.2,"note":"Illustrates individual contributions. Actual FEC records would replace this aggregate demo value."},
+    {"id":"independent-spending","source":"political-orgs","target":"media-vendors","type":"independent_expenditure","layer":"political","amount":4.2,"status":"illustrative","source_ids":["fec"],"confidence":0.2,"note":"Money goes to vendors; candidate support/opposition should be represented separately as a semantic edge."},
+    {"id":"unresolved-business","source":"firms","target":"unresolved-firms","type":"unresolved_intermediate_activity","layer":"real","amount":1700,"status":"residual","source_ids":["bea"],"confidence":0.1,"note":"Demonstrates the rule that unknown counterparties remain visible rather than becoming zero."}
+  ]
+}
