@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Literal
 
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import FileResponse
@@ -9,11 +10,12 @@ from .repository import entity_detail, load_graph
 
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
+GraphMode = Literal["reported", "prototype"]
 
 app = FastAPI(
     title="OpenEconomy",
-    version="0.1.0",
-    description="An explorable prototype of economic and political money flows.",
+    version="0.2.0",
+    description="An explorable empirical model of economic and political money flows.",
 )
 
 
@@ -24,10 +26,11 @@ def health() -> dict[str, str]:
 
 @app.get("/api/graph")
 def graph(
+    mode: GraphMode = "reported",
     layer: list[Layer] | None = Query(default=None),
     status: list[EvidenceStatus] | None = Query(default=None),
 ) -> dict:
-    payload = load_graph()
+    payload = load_graph(mode)
     flows = payload.flows
     if layer:
         wanted = set(layer)
@@ -51,16 +54,16 @@ def graph(
 
 
 @app.get("/api/entities/{entity_id}")
-def entity(entity_id: str) -> dict:
-    detail = entity_detail(entity_id)
+def entity(entity_id: str, mode: GraphMode = "reported") -> dict:
+    detail = entity_detail(entity_id, mode)
     if detail is None:
         raise HTTPException(status_code=404, detail="Entity not found")
     return detail
 
 
 @app.get("/api/sources")
-def sources() -> list:
-    return load_graph().sources
+def sources(mode: GraphMode = "reported") -> list:
+    return load_graph(mode).sources
 
 
 if STATIC.exists():

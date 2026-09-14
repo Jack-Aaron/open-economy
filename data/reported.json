@@ -1,0 +1,56 @@
+{
+  "metadata": {
+    "title": "OpenEconomy reported-data graph",
+    "period": "2025",
+    "currency": "USD",
+    "mode": "reported",
+    "warning": "Reported-data view. Only source systems already integrated are shown. Missing edges mean not yet integrated, not zero. Current graph includes BLS QCEW covered wages; additional BEA, Fed, SEC, Census, FEC, Treasury and USAspending flows are being added source by source."
+  },
+  "sources": [
+    {
+      "id": "bls-qcew-2025",
+      "name": "Employment and Wages, Annual Averages 2025 — QCEW coverage by ownership",
+      "publisher": "U.S. Bureau of Labor Statistics",
+      "url": "https://www.bls.gov/cew/publications/employment-and-wages-annual-averages/2025/chart-data.htm",
+      "note": "Final 2025 national annual-average employment and total wage coverage by ownership; published August 28, 2026."
+    }
+  ],
+  "entities": [
+    {"id":"households","name":"Households","kind":"sector","sector":"households","description":"Workers and household units receiving labor income and other economic flows.","tags":["macro","reported"]},
+    {"id":"firms","name":"Private Employers","kind":"sector","sector":"business","description":"Private employers covered by state unemployment insurance systems in BLS QCEW.","tags":["macro","reported"]},
+    {"id":"government","name":"Government Employers","kind":"sector","sector":"government","description":"Federal, state, and local government employers represented in BLS QCEW wage reporting.","tags":["macro","reported"]},
+    {"id":"federal-government","name":"Federal Government","kind":"subsector","sector":"government","description":"Federal civilian employment covered in QCEW.","parent_id":"government","tags":["reported"]},
+    {"id":"state-government","name":"State Government","kind":"subsector","sector":"government","description":"State government employment covered in QCEW.","parent_id":"government","tags":["reported"]},
+    {"id":"local-government","name":"Local Government","kind":"subsector","sector":"government","description":"Local government employment covered in QCEW.","parent_id":"government","tags":["reported"]}
+  ],
+  "flows": [
+    {
+      "id":"private-covered-wages-2025",
+      "source":"firms",
+      "target":"households",
+      "type":"covered_wages",
+      "layer":"income",
+      "amount":10532.191402092,
+      "unit":"USD billions / year",
+      "period":"2025",
+      "status":"reported",
+      "source_ids":["bls-qcew-2025"],
+      "confidence":1.0,
+      "note":"Private-sector QCEW total annual wages. Covers 133,160,274 annual-average jobs across 11,806,967 establishments. This is gross covered wages, not total BEA compensation of employees."
+    },
+    {
+      "id":"government-covered-wages-2025",
+      "source":"government",
+      "target":"households",
+      "type":"covered_wages",
+      "layer":"income",
+      "amount":1727.03549788,
+      "unit":"USD billions / year",
+      "period":"2025",
+      "status":"reported",
+      "source_ids":["bls-qcew-2025"],
+      "confidence":1.0,
+      "note":"Federal, state, and local QCEW wages combined: $307.040B federal + $411.180B state + $1,008.815B local."
+    }
+  ]
+}

@@ -13,20 +13,23 @@
       <h1>OpenEconomy</h1>
       <p>Follow money through households, firms, government, finance, trade, and political organizations.</p>
     </div>
-    <div class="prototype-badge">Prototype</div>
+    <div class="prototype-badge" id="mode-badge">Reported data</div>
   </header>
 
   <main class="layout">
     <section class="workspace">
       <div class="toolbar">
         <div class="toolbar-group">
+          <span class="toolbar-label">Data</span>
+          <button class="filter mode-filter active" data-mode="reported">Reported</button>
+          <button class="filter mode-filter" data-mode="prototype">Architecture demo</button>
           <span class="toolbar-label">Layers</span>
-          <button class="filter active" data-layer="all">All</button>
-          <button class="filter" data-layer="real">Real</button>
-          <button class="filter" data-layer="income">Income</button>
-          <button class="filter" data-layer="financial">Financial</button>
-          <button class="filter" data-layer="fiscal">Fiscal</button>
-          <button class="filter" data-layer="political">Political</button>
+          <button class="filter layer-filter active" data-layer="all">All</button>
+          <button class="filter layer-filter" data-layer="real">Real</button>
+          <button class="filter layer-filter" data-layer="income">Income</button>
+          <button class="filter layer-filter" data-layer="financial">Financial</button>
+          <button class="filter layer-filter" data-layer="fiscal">Fiscal</button>
+          <button class="filter layer-filter" data-layer="political">Political</button>
         </div>
         <div class="toolbar-group compact">
           <span class="legend-dot reported"></span><span>reported</span>
@@ -54,7 +57,7 @@
       <div class="inspector-empty">
         <span class="kicker">Inspect the circulation</span>
         <h2>Select a node</h2>
-        <p>Click any sector or institution to see what flows in, what flows out, its children, and the public sources intended to support those relationships.</p>
+        <p>Click a sector or flow to inspect its amount, definition, evidence status, and source.</p>
       </div>
     </aside>
   </main>

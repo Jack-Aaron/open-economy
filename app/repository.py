@@ -4,17 +4,23 @@ from pathlib import Path
 
 from .models import GraphPayload
 
-DATA_PATH = Path(__file__).resolve().parents[1] / "data" / "prototype.json"
+ROOT = Path(__file__).resolve().parents[1]
+DATA_PATHS = {
+    "reported": ROOT / "data" / "reported.json",
+    "prototype": ROOT / "data" / "prototype.json",
+}
 
 
-@lru_cache(maxsize=1)
-def load_graph() -> GraphPayload:
-    raw = json.loads(DATA_PATH.read_text(encoding="utf-8"))
+@lru_cache(maxsize=2)
+def load_graph(mode: str = "reported") -> GraphPayload:
+    if mode not in DATA_PATHS:
+        raise ValueError(f"Unknown graph mode: {mode}")
+    raw = json.loads(DATA_PATHS[mode].read_text(encoding="utf-8"))
     return GraphPayload.model_validate(raw)
 
 
-def entity_detail(entity_id: str) -> dict | None:
-    graph = load_graph()
+def entity_detail(entity_id: str, mode: str = "reported") -> dict | None:
+    graph = load_graph(mode)
     entities = {entity.id: entity for entity in graph.entities}
     entity = entities.get(entity_id)
     if not entity:
