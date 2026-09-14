@@ -1,0 +1,22 @@
+{
+  "datasets": [
+    {"id":"bea-nipa","source_id":"bea","name":"National Income and Product Accounts","transport":"api","url":"https://apps.bea.gov/api/data","auth_env":"BEA_API_KEY","bulk":false,"note":"GDP, income, consumption, compensation, taxes, transfers and saving."},
+    {"id":"bea-input-output","source_id":"bea","name":"Input-Output Accounts","transport":"api","url":"https://apps.bea.gov/api/data","auth_env":"BEA_API_KEY","bulk":false,"note":"Industry make/use and requirements tables."},
+    {"id":"bea-gdp-industry","source_id":"bea","name":"GDP by Industry","transport":"api","url":"https://apps.bea.gov/api/data","auth_env":"BEA_API_KEY","bulk":false,"note":"Industry value added, output and inputs."},
+    {"id":"bea-ita-iip","source_id":"bea","name":"International Transactions and Investment Position","transport":"api","url":"https://apps.bea.gov/api/data","auth_env":"BEA_API_KEY","bulk":false,"note":"Cross-border current and financial flows."},
+    {"id":"fed-z1","source_id":"fed-z1","name":"Financial Accounts of the United States (Z.1)","transport":"bulk_zip","url":"https://www.federalreserve.gov/releases/z1/current/z1_csv_files.zip","bulk":true,"note":"Sector balance sheets, transactions, assets and liabilities."},
+    {"id":"sec-companyfacts","source_id":"sec","name":"SEC EDGAR Company Facts","transport":"bulk_zip","url":"https://www.sec.gov/Archives/edgar/daily-index/xbrl/companyfacts.zip","bulk":true,"note":"All standardized XBRL facts for public filers."},
+    {"id":"sec-submissions","source_id":"sec","name":"SEC EDGAR submissions","transport":"bulk_zip","url":"https://www.sec.gov/Archives/edgar/daily-index/bulkdata/submissions.zip","bulk":true,"note":"All public filer submission metadata."},
+    {"id":"bls-qcew","source_id":"bls","name":"Quarterly Census of Employment and Wages","transport":"csv_slices","url":"https://data.bls.gov/cew/data/api/","bulk":false,"note":"Employment and payroll/wages by industry and geography."},
+    {"id":"census-cbp","source_id":"census","name":"County Business Patterns","transport":"api","url":"https://api.census.gov/data/2023/cbp","auth_env":"CENSUS_API_KEY","bulk":false,"note":"Establishments, employment and payroll by NAICS and geography."},
+    {"id":"census-abs","source_id":"census","name":"Annual Business Survey","transport":"api","url":"https://api.census.gov/data/2023/abscs","auth_env":"CENSUS_API_KEY","bulk":false,"note":"Employer firms, receipts, employment and annual payroll."},
+    {"id":"fec","source_id":"fec","name":"Federal Election Commission campaign-finance data","transport":"api_and_bulk","url":"https://www.fec.gov/data/browse-data/","auth_env":"FEC_API_KEY","bulk":true,"note":"Contributions, committee transfers, disbursements and independent expenditures."},
+    {"id":"usaspending","source_id":"usaspending","name":"USAspending","transport":"api","url":"https://api.usaspending.gov/","bulk":false,"note":"Federal contracts, grants, loans, recipients and account spending."},
+    {"id":"treasury-fiscal-data","source_id":"treasury","name":"Treasury Fiscal Data","transport":"api","url":"https://fiscaldata.treasury.gov/api/fiscal-data-api/","bulk":false,"note":"Federal receipts, outlays, debt and fiscal accounts."},
+    {"id":"senate-lda","source_id":"senate-lda","name":"Lobbying Disclosure Act data","transport":"api","url":"https://lda.senate.gov/api/","bulk":false,"note":"Lobbying registrations and quarterly activity."},
+    {"id":"fdic","source_id":"fdic","name":"FDIC BankFind Suite","transport":"api","url":"https://banks.data.fdic.gov/bankfind-suite","bulk":false,"note":"Bank institutions, deposits, assets and balance-sheet detail."},
+    {"id":"eia","source_id":"eia","name":"EIA Open Data","transport":"api","url":"https://api.eia.gov/","auth_env":"EIA_API_KEY","bulk":false,"note":"Energy production, consumption, prices and flows."},
+    {"id":"irs-soi","source_id":"irs","name":"IRS Statistics of Income","transport":"bulk","url":"https://www.irs.gov/statistics/soi-tax-stats","bulk":true,"note":"Household, corporate, nonprofit and business tax statistics."},
+    {"id":"census-cfs","source_id":"census","name":"Commodity Flow Survey","transport":"api_and_bulk","url":"https://www.census.gov/programs-surveys/cfs/data.html","bulk":true,"note":"Physical commodity shipments and origin-destination flows."}
+  ]
+}
