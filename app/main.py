@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 from typing import Literal
 
@@ -10,6 +11,7 @@ from .repository import entity_detail, load_graph
 
 ROOT = Path(__file__).resolve().parents[1]
 STATIC = ROOT / "static"
+COVERAGE_PATH = ROOT / "data" / "source_coverage.json"
 GraphMode = Literal["reported", "prototype"]
 
 app = FastAPI(
@@ -64,6 +66,11 @@ def entity(entity_id: str, mode: GraphMode = "reported") -> dict:
 @app.get("/api/sources")
 def sources(mode: GraphMode = "reported") -> list:
     return load_graph(mode).sources
+
+
+@app.get("/api/data-coverage")
+def data_coverage() -> dict:
+    return json.loads(COVERAGE_PATH.read_text(encoding="utf-8"))
 
 
 if STATIC.exists():

@@ -10,6 +10,18 @@ def test_health():
     assert client.get("/health").json() == {"status": "ok"}
 
 
+def test_data_coverage_is_explicit():
+    response = client.get("/api/data-coverage")
+    assert response.status_code == 200
+    body = response.json()
+    sources = {item["id"]: item for item in body["sources"]}
+    assert sources["bls"]["graph"] is True
+    assert sources["fec"]["graph"] is True
+    assert sources["bea"]["acquisition"] is True
+    assert sources["bea"]["graph"] is False
+    assert sources["senate-lda"]["acquisition"] is False
+
+
 def test_reported_graph_is_default():
     response = client.get("/api/graph")
     assert response.status_code == 200

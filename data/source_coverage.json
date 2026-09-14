@@ -1,0 +1,25 @@
+{
+  "generated_for_commit": "f396dba3885273074514ef405de6c4f2a78dd875",
+  "stage_definitions": {
+    "catalogued": "Authoritative source system and relevant datasets are identified in the machine-readable catalog.",
+    "acquisition": "Repository contains executable code that retrieves source-native artifacts with provenance metadata.",
+    "normalized": "Source-native records are parsed into stable OpenEconomy concepts without silently changing their measurement definition.",
+    "curated": "At least one reviewed, reproducible fact set from the source is checked into data/curated or produced deterministically.",
+    "graph": "At least one fact from the source is published in the default reported-data graph."
+  },
+  "sources": [
+    {"id":"bea","name":"Bureau of Economic Analysis","catalogued":true,"acquisition":true,"normalized":false,"curated":false,"graph":false,"notes":"Public Integrated Macroeconomic Accounts and open-data catalog download without credentials; BEA API key enables NIPA, input-output, industry, international, regional and MNE API pulls."},
+    {"id":"fed-z1","name":"Federal Reserve Financial Accounts / FWTW","catalogued":true,"acquisition":true,"normalized":false,"curated":false,"graph":false,"notes":"Z.1 bulk files and Issuer-to-Holder / From-Whom-to-Whom matrix are wired. FWTW edges must retain inferred/estimated evidence status."},
+    {"id":"bls","name":"Bureau of Labor Statistics QCEW","catalogued":true,"acquisition":true,"normalized":true,"curated":true,"graph":true,"notes":"2025 national covered wages and employment are normalized, reconciled by ownership and live on the reported graph."},
+    {"id":"sec","name":"SEC EDGAR","catalogued":true,"acquisition":true,"normalized":false,"curated":false,"graph":false,"notes":"Ticker map plus complete Company Facts and submissions bulk archives are wired; company/entity normalization is next."},
+    {"id":"census-business","name":"Census CBP / Annual Business Survey","catalogued":true,"acquisition":true,"normalized":false,"curated":false,"graph":false,"notes":"2023 CBP and ABS API pulls are wired. Census key is required for the configured queries."},
+    {"id":"fec","name":"Federal Election Commission","catalogued":true,"acquisition":true,"normalized":false,"curated":true,"graph":true,"notes":"Official cycle aggregates are curated/live. Full 2025-2026 candidate, committee, contributor, transfer, candidate-payment, operating-expenditure, independent-expenditure, electioneering, communication-cost and bundled-lobbyist files are wired but transaction-level normalization is not complete."},
+    {"id":"usaspending","name":"USAspending","catalogued":true,"acquisition":true,"normalized":false,"curated":false,"graph":false,"notes":"Federal award spending-over-time acquisition is implemented; recipient/award entity resolution is not yet normalized."},
+    {"id":"treasury","name":"Treasury Fiscal Data","catalogued":true,"acquisition":true,"normalized":false,"curated":false,"graph":false,"notes":"Monthly Treasury Statement Table 1 acquisition is implemented; fiscal-account normalization is not yet complete."},
+    {"id":"senate-lda","name":"Senate Lobbying Disclosure Act","catalogued":true,"acquisition":false,"normalized":false,"curated":false,"graph":false,"notes":"Source identified; exact production API/download contract still needs implementation and verification."},
+    {"id":"fdic","name":"FDIC BankFind Suite","catalogued":true,"acquisition":false,"normalized":false,"curated":false,"graph":false,"notes":"Institutions, financials, locations, history and Summary of Deposits are in scope; adapter not yet implemented."},
+    {"id":"eia","name":"Energy Information Administration","catalogued":true,"acquisition":false,"normalized":false,"curated":false,"graph":false,"notes":"Open Data API and no-key bulk facility are in scope; adapter not yet implemented."},
+    {"id":"irs","name":"IRS Statistics of Income","catalogued":true,"acquisition":false,"normalized":false,"curated":false,"graph":false,"notes":"SOI is a family of products rather than one dataset; household, corporate, nonprofit and migration products require explicit subcatalog/adapters."},
+    {"id":"census-cfs","name":"Census Commodity Flow Survey","catalogued":true,"acquisition":false,"normalized":false,"curated":false,"graph":false,"notes":"2022 CFS APIs and public-use microdata are identified; adapter not yet implemented."}
+  ]
+}
