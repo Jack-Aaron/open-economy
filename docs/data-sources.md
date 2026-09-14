@@ -6,10 +6,12 @@ OpenEconomy treats official source systems as independent evidence streams that 
 
 | Domain | Source | What OpenEconomy uses it for | Access |
 |---|---|---|---|
+| Cross-sector macro accounting | BEA/Fed Integrated Macroeconomic Accounts | Production, income, spending, capital formation, financial transactions, revaluations and sector balance sheets | Public XLSX |
 | National accounts | BEA NIPA | GDP, consumption, compensation, income, taxes, transfers, saving | API key |
 | Production network | BEA Input-Output / GDP by Industry | Make/use relationships, intermediate inputs, value added | API key |
 | International | BEA ITA / IIP | Imports, exports, income and cross-border financial positions | API key |
 | Financial system | Federal Reserve Z.1 | Sector transactions, assets, liabilities, balance sheets | Public bulk |
+| Financial counterparty network | Fed Issuer-to-Holder / From-Whom-to-Whom | Holder → issuer exposures by financial instrument and quarter | Public CSV |
 | Public companies | SEC EDGAR XBRL | Company financial statement facts and filing metadata | Public API/bulk |
 | Employment/payroll | BLS QCEW | Employment and wage totals by industry and geography | Public CSV |
 | Establishments/payroll | Census CBP / ABS | Firms, establishments, receipts, employment, payroll | Census API key |
@@ -24,19 +26,27 @@ OpenEconomy treats official source systems as independent evidence streams that 
 
 The source catalog in `data/source_catalog.json` is machine-readable and grows as additional official systems are integrated.
 
+## A particularly important source: Fed FWTW
+
+The Federal Reserve's Issuer-to-Holder (From-Whom-to-Whom) dataset is nearly a native OpenEconomy financial graph. Each row identifies a holding sector, issuing sector, financial instrument, quarter, and level in millions of dollars. It is reconciled to Financial Accounts issuer, holder, and instrument totals. The Fed states that some links are built using source detail while unresolved issuance is allocated using market-structure restrictions and proportionality assumptions. OpenEconomy therefore preserves these edges as estimated/inferred evidence rather than relabeling them as direct observations.
+
+The current Fed release supplies levels only. Transactions, revaluations, and other volume changes are not yet part of FWTW, so OpenEconomy must not interpret quarter-to-quarter stock differences as transaction flows without further reconciliation.
+
 ## Retrieval
 
 Install dependencies, copy `.env.example` to `.env`, and add any keys you have. Public/no-key sources work without credentials.
 
 ```bash
-python scripts/sync_data.py --source bls --source sec
+python scripts/sync_data.py --source bea --source bls --source sec
 ```
 
-A normal sync avoids multi-hundred-megabyte archives. To retrieve large archives such as the complete Fed Z.1 CSV package and SEC Company Facts:
+A normal sync avoids the largest archives. To retrieve large archives such as the complete Fed Z.1 CSV package, the Fed FWTW matrix, and SEC Company Facts:
 
 ```bash
 python scripts/sync_data.py --source fed-z1 --source sec --include-bulk
 ```
+
+BEA's public open-data catalog and Integrated Macroeconomic Accounts workbook are downloaded even without a BEA API key; adding `BEA_API_KEY` enables the NIPA, input-output, GDP-by-industry, international, regional and MNE API queries.
 
 Each source fails independently by default, allowing public sources to update even when a key-required source is not configured. Use `--strict` for reproducibility runs that must fail on any unavailable source.
 

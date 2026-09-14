@@ -10,9 +10,11 @@ def test_catalog_has_core_source_families():
     specs = load_catalog()
     ids = {item.id for item in specs}
     assert {
+        "bea-integrated-macro",
         "bea-nipa",
         "bea-input-output",
         "fed-z1",
+        "fed-fwtw",
         "sec-companyfacts",
         "bls-qcew",
         "census-cbp",
@@ -20,6 +22,12 @@ def test_catalog_has_core_source_families():
         "usaspending",
         "treasury-fiscal-data",
     } <= ids
+
+
+def test_fwtw_is_classified_as_bulk_and_bea_macro_is_public():
+    specs = {item.id: item for item in load_catalog()}
+    assert specs["fed-fwtw"].bulk is True
+    assert specs["bea-integrated-macro"].auth_env is None
 
 
 def test_redact_url_hides_keys():

@@ -5,6 +5,9 @@ from ingest.http import Artifact, DownloadClient
 
 CURRENT_CSV_ZIP = "https://www.federalreserve.gov/releases/z1/current/z1_csv_files.zip"
 RELEASE_DATES = "https://www.federalreserve.gov/releases/z1/release-dates.htm"
+FWTW_PAGE = "https://www.federalreserve.gov/releases/efa/fwtw.htm"
+FWTW_CSV = "https://www.federalreserve.gov/releases/efa/fwtw_data.csv"
+FWTW_DICTIONARY = "https://www.federalreserve.gov/releases/efa/fwtw_data_dictionary.txt"
 
 
 class FederalReserveZ1Adapter(Adapter):
@@ -17,15 +20,35 @@ class FederalReserveZ1Adapter(Adapter):
                 "release-index",
                 RELEASE_DATES,
                 filename="release-dates.html",
-            )
+            ),
+            client.get_and_save(
+                self.source_id,
+                "from-whom-to-whom-documentation",
+                FWTW_PAGE,
+                filename="fwtw.html",
+            ),
+            client.get_and_save(
+                self.source_id,
+                "from-whom-to-whom-dictionary",
+                FWTW_DICTIONARY,
+                filename="fwtw_data_dictionary.txt",
+            ),
         ]
         if include_bulk:
-            artifacts.append(
-                client.get_and_save(
-                    self.source_id,
-                    "current-release-csv",
-                    CURRENT_CSV_ZIP,
-                    filename="z1_csv_files.zip",
-                )
+            artifacts.extend(
+                [
+                    client.get_and_save(
+                        self.source_id,
+                        "current-release-csv",
+                        CURRENT_CSV_ZIP,
+                        filename="z1_csv_files.zip",
+                    ),
+                    client.get_and_save(
+                        self.source_id,
+                        "from-whom-to-whom",
+                        FWTW_CSV,
+                        filename="fwtw_data.csv",
+                    ),
+                ]
             )
         return artifacts

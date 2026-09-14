@@ -6,6 +6,10 @@ from ingest.adapters.base import Adapter
 from ingest.http import Artifact, DownloadClient
 
 BEA_API = "https://apps.bea.gov/api/data"
+BEA_OPEN_DATA_CATALOG = "https://apps.bea.gov/Data.json"
+INTEGRATED_MACRO_ACCOUNTS = (
+    "https://apps.bea.gov/national/nipaweb/Ni_FedBeaSna/SS_Data/Section1All_xls.xlsx"
+)
 CORE_NIPA_TABLES = {
     "gdp-current-dollar": "T10105",
     "personal-income-disposition": "T20100",
@@ -16,13 +20,28 @@ class BEAAdapter(Adapter):
     source_id = "bea"
 
     def sync(self, client: DownloadClient, *, include_bulk: bool = False) -> list[Artifact]:
+        # Public, no-key artifacts: these make the core sector-accounting source
+        # reproducible even when a developer has not registered a BEA API key.
+        artifacts: list[Artifact] = [
+            client.get_and_save(
+                self.source_id,
+                "open-data-catalog",
+                BEA_OPEN_DATA_CATALOG,
+                filename="Data.json",
+            ),
+            client.get_and_save(
+                self.source_id,
+                "integrated-macro-accounts",
+                INTEGRATED_MACRO_ACCOUNTS,
+                filename="Section1All_xls.xlsx",
+            ),
+        ]
+
         key = os.getenv("BEA_API_KEY")
         if not key:
-            raise RuntimeError("BEA_API_KEY is required for BEA API ingestion.")
+            return artifacts
 
-        artifacts: list[Artifact] = []
         common = {"UserID": key, "ResultFormat": "JSON"}
-
         response = client.request(
             "GET",
             BEA_API,
