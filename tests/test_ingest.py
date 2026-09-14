@@ -63,3 +63,24 @@ def test_download_client_records_hash_and_metadata(tmp_path: Path):
     assert artifact.bytes == len(b"actual-source-bytes")
     assert "secret" not in artifact.url
     assert files[0].with_name("file.csv.meta.json").exists()
+
+
+def test_qcew_curated_snapshot_reconciles():
+    import json
+    from ingest.http import ROOT
+
+    payload = json.loads(
+        (ROOT / "data" / "curated" / "qcew_2025_national_payroll.json").read_text()
+    )
+    facts = payload["facts"]
+    components = sum(
+        facts[key]["total_annual_wages_usd"]
+        for key in (
+            "private",
+            "federal-government",
+            "state-government",
+            "local-government",
+        )
+    )
+    assert components == facts["total-covered"]["total_annual_wages_usd"]
+    assert payload["status"] == "reported"

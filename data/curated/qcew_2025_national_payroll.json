@@ -1,0 +1,21 @@
+{
+  "dataset": "BLS Quarterly Census of Employment and Wages (QCEW)",
+  "period": "2025",
+  "status": "reported",
+  "measure": "covered_wages",
+  "unit": "USD",
+  "source": {
+    "publisher": "U.S. Bureau of Labor Statistics",
+    "url": "https://www.bls.gov/cew/publications/employment-and-wages-annual-averages/2025/chart-data.htm",
+    "published": "2026-08-28",
+    "note": "National all-industry annual-average coverage table by ownership. Values are exact published QCEW totals."
+  },
+  "definition_note": "QCEW wages include gross covered wages such as bonuses and stock options but exclude employer contributions for Social Security, health insurance, unemployment insurance, workers' compensation, and most private pension/welfare funds. They are not equivalent to BEA compensation of employees.",
+  "facts": {
+    "total-covered": {"annual_avg_establishments": 12112925, "annual_avg_employment": 155732363, "total_annual_wages_usd": 12259226899972},
+    "private": {"annual_avg_establishments": 11806967, "annual_avg_employment": 133160274, "total_annual_wages_usd": 10532191402092},
+    "federal-government": {"annual_avg_establishments": 60834, "annual_avg_employment": 2913515, "total_annual_wages_usd": 307040347038},
+    "state-government": {"annual_avg_establishments": 72430, "annual_avg_employment": 4894763, "total_annual_wages_usd": 411180483065},
+    "local-government": {"annual_avg_establishments": 172694, "annual_avg_employment": 14763811, "total_annual_wages_usd": 1008814667777}
+  }
+}
