@@ -1,10 +1,10 @@
 {
   "metadata": {
     "title": "OpenEconomy reported-data graph",
-    "period": "2025",
+    "period": "multiple source-native periods",
     "currency": "USD",
     "mode": "reported",
-    "warning": "Reported-data view. Only source systems already integrated are shown. Missing edges mean not yet integrated, not zero. Current graph includes BLS QCEW covered wages; additional BEA, Fed, SEC, Census, FEC, Treasury and USAspending flows are being added source by source."
+    "warning": "Reported-data view. Only source systems already integrated are shown. Missing edges mean not yet integrated, not zero. BLS QCEW payroll and FEC federal campaign-finance aggregates are currently live; BEA, Fed, SEC, Census, Treasury, USAspending and transaction-level FEC data are being added source by source."
   },
   "sources": [
     {
@@ -13,15 +13,29 @@
       "publisher": "U.S. Bureau of Labor Statistics",
       "url": "https://www.bls.gov/cew/publications/employment-and-wages-annual-averages/2025/chart-data.htm",
       "note": "Final 2025 national annual-average employment and total wage coverage by ownership; published August 28, 2026."
+    },
+    {
+      "id": "fec-2026-15-month-summary",
+      "name": "Statistical Summary of 15-Month Campaign Activity of the 2025-2026 Election Cycle",
+      "publisher": "Federal Election Commission",
+      "url": "https://www.fec.gov/updates/statistical-summary-of-15-month-campaign-activity-of-the-2025-2026-election-cycle/",
+      "note": "Federal campaign-finance reports covering January 1, 2025 through March 31, 2026; published July 9, 2026."
     }
   ],
   "entities": [
-    {"id":"households","name":"Households","kind":"sector","sector":"households","description":"Workers and household units receiving labor income and other economic flows.","tags":["macro","reported"]},
+    {"id":"households","name":"Households","kind":"sector","sector":"households","description":"Workers and household units receiving labor income and participating in other economic and political flows.","tags":["macro","reported"]},
     {"id":"firms","name":"Private Employers","kind":"sector","sector":"business","description":"Private employers covered by state unemployment insurance systems in BLS QCEW.","tags":["macro","reported"]},
     {"id":"government","name":"Government Employers","kind":"sector","sector":"government","description":"Federal, state, and local government employers represented in BLS QCEW wage reporting.","tags":["macro","reported"]},
     {"id":"federal-government","name":"Federal Government","kind":"subsector","sector":"government","description":"Federal civilian employment covered in QCEW.","parent_id":"government","tags":["reported"]},
     {"id":"state-government","name":"State Government","kind":"subsector","sector":"government","description":"State government employment covered in QCEW.","parent_id":"government","tags":["reported"]},
-    {"id":"local-government","name":"Local Government","kind":"subsector","sector":"government","description":"Local government employment covered in QCEW.","parent_id":"government","tags":["reported"]}
+    {"id":"local-government","name":"Local Government","kind":"subsector","sector":"government","description":"Local government employment covered in QCEW.","parent_id":"government","tags":["reported"]},
+    {"id":"political-funding-sources","name":"Political Funding Sources","kind":"aggregate","sector":"political","description":"Aggregate funding sources reported to federal political committees. This is a source-category placeholder until transaction-level donor/entity resolution is loaded.","tags":["political","reported"]},
+    {"id":"pac-committees","name":"Federal PACs","kind":"political-sector","sector":"political","description":"Federal political action committees filing with the FEC, including separate segregated funds and nonconnected committees.","tags":["political","reported"]},
+    {"id":"super-pacs","name":"Super PACs","kind":"political-sector","sector":"political","description":"Independent-expenditure-only political committees. They may receive unlimited contributions but may not contribute directly to candidates.","parent_id":"pac-committees","tags":["political","reported"]},
+    {"id":"party-committees","name":"Party Committees","kind":"political-sector","sector":"political","description":"National, state and local federal political party committees filing with the FEC.","tags":["political","reported"]},
+    {"id":"candidate-committees","name":"Congressional Candidate Committees","kind":"political-sector","sector":"political","description":"House and Senate candidate committees with financial activity in the 2025-2026 cycle.","tags":["political","reported"]},
+    {"id":"political-spending-recipients","name":"Political Spending Recipients","kind":"aggregate","sector":"business","description":"Vendors and other persons receiving political committee disbursements. Transaction-level FEC files will resolve this aggregate into named payees.","tags":["political","reported","unresolved"]},
+    {"id":"independent-expenditure-vendors","name":"Independent-Expenditure Vendors","kind":"aggregate","sector":"business","description":"Payees receiving independent-expenditure payments. Candidate support/opposition is not a money transfer and will be modeled separately.","parent_id":"political-spending-recipients","tags":["political","reported","unresolved"]}
   ],
   "flows": [
     {
@@ -36,7 +50,7 @@
       "status":"reported",
       "source_ids":["bls-qcew-2025"],
       "confidence":1.0,
-      "note":"Private-sector QCEW total annual wages. Covers 133,160,274 annual-average jobs across 11,806,967 establishments. This is gross covered wages, not total BEA compensation of employees."
+      "note":"Private-sector QCEW total annual wages. Covers 133,160,274 annual-average jobs across 11,806,967 establishments. Gross covered wages are not the same measure as BEA compensation of employees."
     },
     {
       "id":"government-covered-wages-2025",
@@ -51,6 +65,62 @@
       "source_ids":["bls-qcew-2025"],
       "confidence":1.0,
       "note":"Federal, state, and local QCEW wages combined: $307.040B federal + $411.180B state + $1,008.815B local."
+    },
+    {
+      "id":"super-pac-receipts-2026-cycle-q1",
+      "source":"political-funding-sources",
+      "target":"super-pacs",
+      "type":"committee_receipts",
+      "layer":"political",
+      "amount":1.7246,
+      "unit":"USD billions",
+      "period":"2025-01-01 through 2026-03-31",
+      "status":"reported",
+      "source_ids":["fec-2026-15-month-summary"],
+      "confidence":1.0,
+      "note":"2,236 independent-expenditure-only political committees reported $1.7246B in receipts. The aggregate does not identify donor sectors; transaction-level individual and committee receipt files will resolve the source side."
+    },
+    {
+      "id":"super-pac-disbursements-2026-cycle-q1",
+      "source":"super-pacs",
+      "target":"political-spending-recipients",
+      "type":"committee_disbursements",
+      "layer":"political",
+      "amount":0.9492,
+      "unit":"USD billions",
+      "period":"2025-01-01 through 2026-03-31",
+      "status":"reported",
+      "source_ids":["fec-2026-15-month-summary"],
+      "confidence":1.0,
+      "note":"Super PAC total disbursements through March 31, 2026. This includes multiple spending categories and must not be added to independent expenditures as if independent expenditures were separate spending."
+    },
+    {
+      "id":"pac-to-candidates-2026-cycle-q1",
+      "source":"pac-committees",
+      "target":"candidate-committees",
+      "type":"candidate_contributions",
+      "layer":"political",
+      "amount":0.2745,
+      "unit":"USD billions",
+      "period":"2025-01-01 through 2026-03-31",
+      "status":"reported",
+      "source_ids":["fec-2026-15-month-summary"],
+      "confidence":1.0,
+      "note":"PAC contributions to federal candidates totaled $274.5M. Independent-expenditure-only committees are prohibited from making candidate contributions."
+    },
+    {
+      "id":"independent-expenditures-2026-cycle-q1",
+      "source":"pac-committees",
+      "target":"independent-expenditure-vendors",
+      "type":"independent_expenditure",
+      "layer":"political",
+      "amount":0.2521,
+      "unit":"USD billions",
+      "period":"2025-01-01 through 2026-03-31",
+      "status":"reported",
+      "source_ids":["fec-2026-15-month-summary"],
+      "confidence":1.0,
+      "note":"$252.1M of independent expenditures were reported across Super PACs, hybrid PACs, other PACs, other persons and parties. The money edge terminates at vendors/payees; support or opposition to a candidate is a separate semantic relation."
     }
   ]
 }

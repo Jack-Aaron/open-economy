@@ -1,0 +1,39 @@
+{
+  "dataset": "FEC Statistical Summary of 15-Month Campaign Activity of the 2025-2026 Election Cycle",
+  "period_start": "2025-01-01",
+  "period_end": "2026-03-31",
+  "published": "2026-07-09",
+  "status": "reported",
+  "unit": "USD millions",
+  "source": {
+    "publisher": "Federal Election Commission",
+    "url": "https://www.fec.gov/updates/statistical-summary-of-15-month-campaign-activity-of-the-2025-2026-election-cycle/"
+  },
+  "facts": {
+    "congressional_candidate_receipts": 2127.4,
+    "congressional_candidate_disbursements": 1345.2,
+    "party_committee_receipts": 1120.8,
+    "party_committee_disbursements": 824.8,
+    "pac_receipts": 6300.4,
+    "pac_disbursements": 4784.2,
+    "super_pac_count": 2236,
+    "super_pac_receipts": 1724.6,
+    "super_pac_disbursements": 949.2,
+    "pac_contributions_to_federal_candidates": 274.5,
+    "independent_expenditures_total": 252.1,
+    "independent_expenditures_super_pacs": 219.7,
+    "independent_expenditures_hybrid_pacs": 28.6,
+    "independent_expenditures_other_pacs": 2.8,
+    "independent_expenditures_other_persons": 0.9,
+    "individual_receipts_democratic_party_committees": 338.1,
+    "individual_receipts_republican_party_committees": 297.3,
+    "political_committee_receipts_democratic_party_committees": 50.4,
+    "political_committee_receipts_republican_party_committees": 43.1
+  },
+  "accounting_notes": [
+    "PAC total receipts and disbursements include subtypes such as independent-expenditure-only and hybrid committees; subtype values are analytical decompositions and must not be added to the PAC total.",
+    "Independent expenditures are a spending category and overlap committee disbursements; they must not be added to total PAC disbursements as if they were separate economic activity.",
+    "An independent expenditure is money paid to a vendor or other person. Candidate support/opposition is a separate semantic relationship, not a transfer of money to the candidate.",
+    "Independent-expenditure-only political committees are prohibited from contributing directly to candidates."
+  ]
+}

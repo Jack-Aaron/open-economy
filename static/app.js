@@ -6,16 +6,23 @@ const notice = document.getElementById('notice');
 const modeBadge = document.getElementById('mode-badge');
 
 const positions = {
-  households: [190, 345],
-  firms: [550, 330],
-  government: [530, 95],
+  households: [170, 350],
+  firms: [530, 350],
+  government: [520, 100],
   banks: [210, 585],
   retirement: [500, 600],
   'rest-world': [895, 335],
   'political-orgs': [825, 115],
   'media-vendors': [835, 560],
   'public-companies': [610, 505],
-  'unresolved-firms': [690, 225]
+  'unresolved-firms': [690, 225],
+  'political-funding-sources': [840, 75],
+  'pac-committees': [775, 255],
+  'super-pacs': [985, 245],
+  'party-committees': [930, 420],
+  'candidate-committees': [690, 525],
+  'political-spending-recipients': [930, 610],
+  'independent-expenditure-vendors': [710, 640]
 };
 
 const state = { graph: null, layer: 'all', mode: 'reported', selected: null };
@@ -31,9 +38,12 @@ const humanize = (value) => value.replaceAll('_', ' ').replace(/\b\w/g, c => c.t
 
 function money(flow) {
   if (flow.amount == null) return 'Amount unavailable';
-  const n = Number(flow.amount);
-  if (n >= 1000) return `$${(n / 1000).toFixed(n % 1000 === 0 ? 0 : 3)}T / yr`;
-  return `$${n.toLocaleString(undefined, { maximumFractionDigits: 1 })}B / yr`;
+  const billions = Number(flow.amount);
+  let value;
+  if (billions >= 1000) value = `$${(billions / 1000).toFixed(3).replace(/0+$/, '').replace(/\.$/, '')}T`;
+  else if (billions >= 1) value = `$${billions.toLocaleString(undefined, { maximumFractionDigits: 4 })}B`;
+  else value = `$${(billions * 1000).toLocaleString(undefined, { maximumFractionDigits: 1 })}M`;
+  return flow.unit.includes('/ year') ? `${value} / yr` : value;
 }
 
 function filteredFlows() {
@@ -73,20 +83,12 @@ function renderGraph() {
     const tx = x2 - dx / len * pad;
     const ty = y2 - dy / len * pad;
 
-    const line = makeSvg('line', {
-      x1: sx, y1: sy, x2: tx, y2: ty,
-      class: `edge ${flow.layer}`,
-      'data-flow': flow.id
-    });
+    const line = makeSvg('line', {x1: sx, y1: sy, x2: tx, y2: ty, class: `edge ${flow.layer}`, 'data-flow': flow.id});
     line.addEventListener('click', () => showFlow(flow));
     edgesLayer.appendChild(line);
 
-    const label = makeSvg('text', {
-      x: (sx + tx) / 2,
-      y: (sy + ty) / 2 - 7,
-      class: 'edge-label'
-    });
-    label.textContent = humanize(flow.type);
+    const label = makeSvg('text', {x: (sx + tx) / 2, y: (sy + ty) / 2 - 7, class: 'edge-label'});
+    label.textContent = `${humanize(flow.type)} · ${money(flow)}`;
     edgesLayer.appendChild(label);
   }
 
@@ -94,11 +96,7 @@ function renderGraph() {
     const pos = positions[entity.id];
     if (!pos) continue;
     const [x, y] = pos;
-    const group = makeSvg('g', {
-      class: `node${state.selected === entity.id ? ' selected' : ''}`,
-      transform: `translate(${x}, ${y})`,
-      tabindex: '0', role: 'button', 'aria-label': entity.name
-    });
+    const group = makeSvg('g', {class: `node${state.selected === entity.id ? ' selected' : ''}`, transform: `translate(${x}, ${y})`, tabindex: '0', role: 'button', 'aria-label': entity.name});
     group.appendChild(makeSvg('circle', { r: 58 }));
     const name = makeSvg('text', { class: 'name', y: -2 });
     const words = entity.name.split(' ');
@@ -113,9 +111,7 @@ function renderGraph() {
     kind.textContent = entity.kind;
     group.append(name, kind);
     group.addEventListener('click', () => selectEntity(entity.id));
-    group.addEventListener('keydown', event => {
-      if (event.key === 'Enter' || event.key === ' ') selectEntity(entity.id);
-    });
+    group.addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ') selectEntity(entity.id); });
     nodesLayer.appendChild(group);
   }
 }
@@ -123,12 +119,7 @@ function renderGraph() {
 function flowCard(flow, direction) {
   const entityMap = Object.fromEntries(state.graph.entities.map(e => [e.id, e]));
   const other = direction === 'in' ? entityMap[flow.source] : entityMap[flow.target];
-  return `<div class="flow-card">
-    <div class="title">${direction === 'in' ? '←' : '→'} ${esc(other?.name ?? 'Unknown')} · ${esc(humanize(flow.type))}</div>
-    <div class="amount">${esc(money(flow))}</div>
-    <div class="meta"><span class="badge layer">${esc(flow.layer)}</span><span class="badge ${esc(flow.status)}">${esc(flow.status)}</span>${flow.confidence != null ? `<span class="badge">confidence ${Math.round(flow.confidence * 100)}%</span>` : ''}</div>
-    <p>${esc(flow.note)}</p>
-  </div>`;
+  return `<div class="flow-card"><div class="title">${direction === 'in' ? '←' : '→'} ${esc(other?.name ?? 'Unknown')} · ${esc(humanize(flow.type))}</div><div class="amount">${esc(money(flow))}</div><div class="meta"><span class="badge layer">${esc(flow.layer)}</span><span class="badge ${esc(flow.status)}">${esc(flow.status)}</span><span class="badge">${esc(flow.period)}</span>${flow.confidence != null ? `<span class="badge">confidence ${Math.round(flow.confidence * 100)}%</span>` : ''}</div><p>${esc(flow.note)}</p></div>`;
 }
 
 async function selectEntity(id) {
@@ -138,24 +129,14 @@ async function selectEntity(id) {
   if (!response.ok) return;
   const detail = await response.json();
   const e = detail.entity;
-  inspector.innerHTML = `<div class="kicker">${esc(e.sector)} · ${esc(e.kind)}</div>
-    <h2>${esc(e.name)}</h2><p>${esc(e.description)}</p>
-    ${detail.children.length ? `<h3>Drill down</h3><div class="children">${detail.children.map(child => `<button class="child-chip" data-id="${esc(child.id)}">${esc(child.name)}</button>`).join('')}</div>` : ''}
-    <h3>Flows in</h3>${detail.incoming.length ? detail.incoming.map(flow => flowCard(flow, 'in')).join('') : '<p>No incoming flow is integrated in this data view.</p>'}
-    <h3>Flows out</h3>${detail.outgoing.length ? detail.outgoing.map(flow => flowCard(flow, 'out')).join('') : '<p>No outgoing flow is integrated in this data view.</p>'}
-    <h3>Provenance</h3>${detail.sources.length ? detail.sources.map(source => `<a class="source-link" href="${esc(source.url)}" target="_blank" rel="noreferrer">${esc(source.publisher)} · ${esc(source.name)}</a>`).join('') : '<p>No source attached.</p>'}`;
+  inspector.innerHTML = `<div class="kicker">${esc(e.sector)} · ${esc(e.kind)}</div><h2>${esc(e.name)}</h2><p>${esc(e.description)}</p>${detail.children.length ? `<h3>Drill down</h3><div class="children">${detail.children.map(child => `<button class="child-chip" data-id="${esc(child.id)}">${esc(child.name)}</button>`).join('')}</div>` : ''}<h3>Flows in</h3>${detail.incoming.length ? detail.incoming.map(flow => flowCard(flow, 'in')).join('') : '<p>No incoming flow is integrated in this data view.</p>'}<h3>Flows out</h3>${detail.outgoing.length ? detail.outgoing.map(flow => flowCard(flow, 'out')).join('') : '<p>No outgoing flow is integrated in this data view.</p>'}<h3>Provenance</h3>${detail.sources.length ? detail.sources.map(source => `<a class="source-link" href="${esc(source.url)}" target="_blank" rel="noreferrer">${esc(source.publisher)} · ${esc(source.name)}</a>`).join('') : '<p>No source attached.</p>'}`;
   inspector.querySelectorAll('.child-chip').forEach(btn => btn.addEventListener('click', () => selectEntity(btn.dataset.id)));
 }
 
 function showFlow(flow) {
   const entityMap = Object.fromEntries(state.graph.entities.map(e => [e.id, e]));
   const sources = state.graph.sources.filter(source => flow.source_ids.includes(source.id));
-  inspector.innerHTML = `<div class="kicker">${esc(flow.layer)} flow · ${esc(flow.period)}</div>
-    <h2>${esc(humanize(flow.type))}</h2>
-    <p><strong>${esc(entityMap[flow.source]?.name)}</strong> → <strong>${esc(entityMap[flow.target]?.name)}</strong></p>
-    <div class="amount">${esc(money(flow))}</div>
-    <div class="meta"><span class="badge layer">${esc(flow.layer)}</span><span class="badge ${esc(flow.status)}">${esc(flow.status)}</span></div>
-    <p>${esc(flow.note)}</p><h3>Provenance</h3>${sources.map(source => `<a class="source-link" href="${esc(source.url)}" target="_blank" rel="noreferrer">${esc(source.publisher)} · ${esc(source.name)}</a>`).join('') || '<p>No source attached.</p>'}`;
+  inspector.innerHTML = `<div class="kicker">${esc(flow.layer)} flow · ${esc(flow.period)}</div><h2>${esc(humanize(flow.type))}</h2><p><strong>${esc(entityMap[flow.source]?.name)}</strong> → <strong>${esc(entityMap[flow.target]?.name)}</strong></p><div class="amount">${esc(money(flow))}</div><div class="meta"><span class="badge layer">${esc(flow.layer)}</span><span class="badge ${esc(flow.status)}">${esc(flow.status)}</span></div><p>${esc(flow.note)}</p><h3>Provenance</h3>${sources.map(source => `<a class="source-link" href="${esc(source.url)}" target="_blank" rel="noreferrer">${esc(source.publisher)} · ${esc(source.name)}</a>`).join('') || '<p>No source attached.</p>'}`;
 }
 
 async function loadGraph() {
@@ -172,24 +153,8 @@ async function loadGraph() {
 
 async function init() {
   await loadGraph();
-  document.querySelectorAll('.layer-filter').forEach(button => {
-    button.addEventListener('click', () => {
-      document.querySelectorAll('.layer-filter').forEach(item => item.classList.remove('active'));
-      button.classList.add('active');
-      state.layer = button.dataset.layer;
-      state.selected = null;
-      renderGraph();
-    });
-  });
-  document.querySelectorAll('.mode-filter').forEach(button => {
-    button.addEventListener('click', async () => {
-      document.querySelectorAll('.mode-filter').forEach(item => item.classList.remove('active'));
-      button.classList.add('active');
-      state.mode = button.dataset.mode;
-      inspector.innerHTML = '<div class="inspector-empty"><span class="kicker">Inspect the circulation</span><h2>Select a node</h2><p>Click a sector or flow to inspect its amount, definition, evidence status, and source.</p></div>';
-      await loadGraph();
-    });
-  });
+  document.querySelectorAll('.layer-filter').forEach(button => button.addEventListener('click', () => {document.querySelectorAll('.layer-filter').forEach(item => item.classList.remove('active')); button.classList.add('active'); state.layer = button.dataset.layer; state.selected = null; renderGraph();}));
+  document.querySelectorAll('.mode-filter').forEach(button => button.addEventListener('click', async () => {document.querySelectorAll('.mode-filter').forEach(item => item.classList.remove('active')); button.classList.add('active'); state.mode = button.dataset.mode; inspector.innerHTML = '<div class="inspector-empty"><span class="kicker">Inspect the circulation</span><h2>Select a node</h2><p>Click a sector or flow to inspect its amount, definition, evidence status, and source.</p></div>'; await loadGraph();}));
 }
 
 init().catch(error => { notice.textContent = `OpenEconomy failed to load: ${error.message}`; });

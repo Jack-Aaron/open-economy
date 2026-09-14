@@ -18,6 +18,17 @@ def test_reported_graph_is_default():
     assert body["flows"]
     assert {flow["status"] for flow in body["flows"]} == {"reported"}
     assert any(flow["id"] == "private-covered-wages-2025" for flow in body["flows"])
+    assert any(flow["id"] == "super-pac-receipts-2026-cycle-q1" for flow in body["flows"])
+
+
+def test_reported_political_layer_uses_real_fec_values():
+    body = client.get("/api/graph?layer=political").json()
+    flows = {flow["id"]: flow for flow in body["flows"]}
+    assert flows["super-pac-receipts-2026-cycle-q1"]["amount"] == 1.7246
+    assert flows["super-pac-disbursements-2026-cycle-q1"]["amount"] == 0.9492
+    assert flows["pac-to-candidates-2026-cycle-q1"]["amount"] == 0.2745
+    assert flows["independent-expenditures-2026-cycle-q1"]["amount"] == 0.2521
+    assert {flow["status"] for flow in flows.values()} == {"reported"}
 
 
 def test_prototype_graph_remains_available():
