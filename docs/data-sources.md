@@ -15,7 +15,7 @@ OpenEconomy treats official source systems as independent evidence streams that 
 | Public companies | SEC EDGAR XBRL | Company financial statement facts and filing metadata | Public API/bulk |
 | Employment/payroll | BLS QCEW | Employment and wage totals by industry and geography | Public CSV |
 | Establishments/payroll | Census CBP / ABS | Firms, establishments, receipts, employment, payroll | Census API key |
-| Federal campaign finance | FEC | Contributions, committees, disbursements, outside spending | API/bulk |
+| Federal campaign finance | FEC | Contributions, committee identity/linkages, committee transfers, candidate contributions, operating disbursements, independent expenditures, electioneering communications and communication costs | API/bulk |
 | Federal awards | USAspending | Contracts, grants, loans and recipients | Public API |
 | Federal fiscal flows | Treasury Fiscal Data | Receipts, outlays, debt and account-level fiscal data | Public API |
 | Lobbying | Senate LDA | Registrants, clients, lobbyists and reported lobbying activity | Public API |
@@ -32,6 +32,14 @@ The Federal Reserve's Issuer-to-Holder (From-Whom-to-Whom) dataset is nearly a n
 
 The current Fed release supplies levels only. Transactions, revaluations, and other volume changes are not yet part of FWTW, so OpenEconomy must not interpret quarter-to-quarter stock differences as transaction flows without further reconciliation.
 
+## FEC transaction coverage
+
+`--source fec --include-bulk` retrieves the current-cycle candidate master, candidate-committee linkages, committee master and summary, PAC summary, committee-to-committee transactions, individual contributions, committee-to-candidate transactions, operating expenditures, 24/48-hour independent expenditures, electioneering communications, communication costs and lobbyist-bundled filings. These are the files used to resolve aggregate political-finance nodes into named committees, candidates, contributors and payees.
+
+Independent-expenditure money edges must terminate at the actual payee/vendor. Whether that expenditure supports or opposes a candidate is stored separately as a semantic relationship. Super PACs are also never shown making candidate contributions because independent-expenditure-only committees are legally prohibited from doing so.
+
+The FEC warns that names and addresses of individual contributors may not be sold or used for commercial purposes or to solicit contributions or donations. OpenEconomy treats those records as public-interest research/visualization data and does not expose them as a contact list.
+
 ## Retrieval
 
 Install dependencies, copy `.env.example` to `.env`, and add any keys you have. Public/no-key sources work without credentials.
@@ -40,10 +48,10 @@ Install dependencies, copy `.env.example` to `.env`, and add any keys you have. 
 python scripts/sync_data.py --source bea --source bls --source sec
 ```
 
-A normal sync avoids the largest archives. To retrieve large archives such as the complete Fed Z.1 CSV package, the Fed FWTW matrix, and SEC Company Facts:
+A normal sync avoids the largest archives. To retrieve large archives such as the complete Fed Z.1 CSV package, the Fed FWTW matrix, SEC Company Facts, and transaction-level FEC data:
 
 ```bash
-python scripts/sync_data.py --source fed-z1 --source sec --include-bulk
+python scripts/sync_data.py --source fed-z1 --source sec --source fec --include-bulk
 ```
 
 BEA's public open-data catalog and Integrated Macroeconomic Accounts workbook are downloaded even without a BEA API key; adding `BEA_API_KEY` enables the NIPA, input-output, GDP-by-industry, international, regional and MNE API queries.
@@ -59,5 +67,3 @@ The normalization layer writes source-native records into the warehouse schema i
 ## Measurement rule
 
 Similar-looking measures are not silently blended. BEA compensation, QCEW wages and Census payroll have different concepts and coverage. OpenEconomy preserves each observation and then uses explicit reconciliation rules to decide which measure is authoritative for a graph edge and which measures are cross-checks or decompositions.
-
-FEC contributor records also carry legal-use restrictions. OpenEconomy treats campaign-finance data as a public-interest research/visualization source, not as a solicitation or commercial-contact list.
